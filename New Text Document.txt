@@ -1,0 +1,218 @@
+import 'dart:developer';
+
+import 'package:hairsalon/WidgetsCategory/Categorynativeadview.dart';
+import 'package:hairsalon/modelCategory/itemcategory.dart';
+import 'package:hairsalon/modelCategory/productsprovider.dart';
+import 'package:hairsalon/screenCategory/webview.dart';
+import 'package:hairsalon/utilsCategory/constantsUtilsApp.dart' as constant;
+import 'package:hairsalon/utilsCategory/categoryfunctions.dart' as helper;
+import 'package:hairsalon/utilsCategory/localisation.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_icons/flutter_icons.dart';
+import 'package:provider/provider.dart';
+import 'package:share/share.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+class ItemDetailsScreen extends StatefulWidget {
+  final Item item;
+
+  ItemDetailsScreen({this.item});
+
+  @override
+  _ItemDetailsScreenState createState() => _ItemDetailsScreenState();
+}
+
+class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
+  int currentPageViewIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.red,
+        title: Text(
+          "Happy Shopping",
+        ),
+        actions: <Widget>[
+
+        ],
+      ),
+      //backgroundColor: Colors.red,
+      body: SafeArea(
+        top: false,
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 32, 8, 8),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+
+                    widget.item.productName,
+                    style: TextStyle(fontSize: constant.kIsTablet ? 25 : 18),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Container(
+                          height: 70,
+                          child: TextButton(
+                            onPressed: () async {
+                              final url =
+                              widget.item.clickUrl.replaceAll('"', '');
+                              print("tap url is: $url");
+                              if (await canLaunch(url)) {
+                                await launch(url);
+                              } else {
+                                print("couldn't launch it $url");
+                              }
+                            },
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    AppLocaleLanguage.of(context, 'shopNow'),
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: constant.kIsTablet ? 30 : 24,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            style: ButtonStyle(
+                                backgroundColor: MaterialStateColor.resolveWith(
+                                        (states) => Colors.red)),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+
+
+                  SizedBox(
+                    width: double.infinity,
+                    height: constant.kIsTablet ? 500 : 360,
+                    child: NativeAdViewWrapper(
+                      androidLayoutName: constant.kIsTablet
+                          ? constant.kNativeAndroidLayoutTablet
+                          : constant.kNativeAndroidLayoutBigDetailScreen,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  /*Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Container(
+                          height: 70,
+                          child: TextButton(
+                            onPressed: ()  {},
+
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    'Happy shopping',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: constant.kIsTablet ? 30 : 24,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            style: ButtonStyle(
+                                backgroundColor: MaterialStateColor.resolveWith(
+                                        (states) => Colors.red)),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),*/
+                  SizedBox(
+                    height: 3,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+
+                      Text(
+                        "\$${widget.item.originalPrice}",
+                        softWrap: true,
+                        style: widget.item.salePrice ==
+                            0.0
+                            ? TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 30)
+                            : TextStyle(
+                            color: Colors.red[600],
+                            decoration: TextDecoration.lineThrough,
+                            fontSize: 24),
+                      ),
+                      Text(
+                        widget.item.salePrice == 0.0
+                            ? ""
+                            : "\$${helper.formatPrice(widget.item.salePrice)}",
+                        style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red[700]),
+                        softWrap: true,
+                      ),
+                      Container(
+                        height: 20,
+                        width: 50,
+                        color: Colors.red,
+                        child: Center(
+                          child: Text(
+                            widget.item.discount == 0
+                                ? "0%"
+                                : "-${widget.item.discount}%",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  Text(
+
+                    widget.item.productName,
+                    style: TextStyle(fontSize: constant.kIsTablet ? 25 : 18),
+                  ),
+
+
+
+                  SizedBox(
+                    height: 17,
+                  ),
+                  //  aqui van los botones
+
+
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
